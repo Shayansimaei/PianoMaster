@@ -1,0 +1,47 @@
+:root {
+  /* Brand */
+  --nf-bg:           #2E1E0F;
+  --nf-surface:      #1F140A;
+  --nf-surface-2:    #4E342C;
+  --nf-border:       #2a2a3a;
+
+  --nf-accent:       #CAA316;   /* acid green – correct note */
+  --nf-accent-dim:   #7a9a1f;
+  --nf-error:        #ff4f6a;   /* red – wrong note */
+  --nf-warn:         #CAA316;   /* amber – close note */
+  --nf-blue:         #03CEA4;   /* blue – target note */
+  --nf-blue-dim:     #027961;
+
+  --nf-text:         #f0f0f8;
+  --nf-text-muted:   #8a8a99;
+  --nf-text-dim:     #3a3a55;
+
+  /* Piano keys */
+  --nf-key-white:    #e8e8f0;
+  --nf-key-black:    #1a1a24;
+  --nf-key-active:   var(--nf-accent);
+  --nf-key-target:   var(--nf-blue);
+  --nf-key-error:    var(--nf-error);
+
+  /* Typography */
+  --nf-font-display: 'Outfit', sans-serif;
+  --nf-font-mono:    'Space Mono', monospace;
+
+  /* Ionic overrides */
+  --ion-background-color:         var(--nf-bg);
+  --ion-background-color-rgb:     10, 10, 15;
+  --ion-text-color:               var(--nf-text);
+  --ion-text-color-rgb:           240, 240, 248;
+  --ion-toolbar-background:       var(--nf-surface);
+  --ion-tab-bar-background:       var(--nf-surface);
+  --ion-tab-bar-border-color:     var(--nf-border);
+  --ion-item-background:          var(--nf-surface-2);
+  --ion-card-background:          var(--nf-surface-2);
+  --ion-color-primary:            var(--nf-accent);
+  --ion-color-primary-rgb:        200, 245, 69;
+  --ion-color-primary-contrast:   #0a0a0f;
+  --ion-color-primary-shade:      #9abf2a;
+  --ion-color-primary-tint:       #d4f76a;
+  --ion-color-danger:             var(--nf-error);
+  --ion-color-warning:            var(--nf-warn);
+}

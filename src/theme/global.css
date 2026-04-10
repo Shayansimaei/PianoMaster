@@ -1,0 +1,69 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--nf-font-display);
+  background: var(--nf-bg);
+  color: var(--nf-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+ion-toolbar {
+  --background: var(--nf-surface);
+  --border-color: var(--nf-border);
+}
+
+ion-title {
+  font-family: var(--nf-font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 1.1rem;
+  color: var(--nf-text);
+}
+
+ion-tab-bar {
+  height: 60px;
+  border-top: 1px solid var(--nf-border);
+}
+
+ion-tab-button {
+  --color: var(--nf-text-muted);
+  --color-selected: var(--nf-accent);
+  font-family: var(--nf-font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+ion-tab-button ion-icon {
+  font-size: 1.3rem;
+  margin-bottom: 2px;
+}
+
+ion-content {
+  --background: var(--nf-bg);
+}
+
+ion-card {
+  background: var(--nf-surface-2);
+  border: 1px solid var(--nf-border);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+ion-badge {
+  font-family: var(--nf-font-mono);
+  font-size: 0.7rem;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--nf-border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--nf-text-muted); }
+
+/* Utility */
+.mono { font-family: var(--nf-font-mono); }
+.accent { color: var(--nf-accent); }
+.muted { color: var(--nf-text-muted); }
