@@ -1,4 +1,4 @@
-import { createRouter } from '@ionic/vue-router'
+import { createRouter, createWebHistory } from '@ionic/vue-router'
 import { createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
