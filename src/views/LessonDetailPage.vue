@@ -30,13 +30,12 @@
 
       <!-- Active -->
       <div v-else class="lesson-layout">
-        <div class="step-counter mono">
-          Step {{ lessonStore.currentStepIndex + 1 }} of {{ lessonStore.currentLesson?.steps.length }}
-        </div>
+    
+        <div class="badges">
 
-        <div v-if="currentStep?.hint" class="hint-box">
+        <div v-if="currentStep?.id" class="hint-box">
           <ion-icon :icon="informationCircleOutline" />
-          {{ currentStep.hint }}
+          {{ currentStep.id }}
         </div>
 
         <!-- Chord name badge (chord lessons only) -->
@@ -46,13 +45,17 @@
             {{ heldCorrect.size }}/{{ requiredMidis.size }} held
           </span>
         </div>
-
+        </div>
+        <div class="step-counter mono">
+          Step {{ lessonStore.currentStepIndex + 1 }} of {{ lessonStore.currentLesson?.steps.length }}
+        </div>
         <NoteDisplay
           :target-note="currentTargetNote"
           :target-notes="requiredMidis"
           :played-note="lastPlayedNote"
           :result="matchResult"
           :held-correct="heldCorrect"
+          :is-lesson="true"
         />
 
         <div name="feedback" :class="`${ feedbackVisible? `feedback-visible`:`feedback-none-visible` }`" >
@@ -118,6 +121,7 @@ import { useMidi } from '@/composables/useMidi'
 import { useAudioSampler } from '@/composables/useAudioSampler'
 import { useLessonStore } from '@/stores/lesson.store'
 import type { MatchResult } from '@/types'
+import { chordFromSet } from '@/utils/midiToChord'
 
 const route       = useRoute()
 const lessonStore = useLessonStore()
@@ -149,6 +153,7 @@ const currentTargetNote = computed((): number | null => {
   const unplayed = currentStep.value.targetNotes.find(m => !heldCorrect.value.has(m))
   return unplayed ?? currentStep.value.targetNotes[0] ?? null
 })
+const chordName = computed(() => chordFromSet(activeNotes.value).chord)
 
 const wrongNote = computed(() =>
   wrongNotes.value.size > 0 ? [...wrongNotes.value][0] : null
@@ -266,6 +271,7 @@ onUnmounted(() => {
 .progress-bar-track { height: 3px; background: var(--nf-border); width: 100%; }
 .progress-bar-fill  { height: 100%; background: var(--nf-accent); transition: width 300ms ease; }
 .lesson-layout { padding: 16px; display: flex; flex-direction: column; gap: 14px; min-height: 100%; }
+.badges{ display: flex; flex-direction: row; gap: 14px; justify-content: end;}
 .step-counter { font-size: 0.72rem; color: var(--nf-text-muted); letter-spacing: 0.06em; }
 .hint-box {
   display: flex; align-items: center; gap: 8px;

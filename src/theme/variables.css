@@ -10,7 +10,7 @@
   --nf-error:        #ff4f6a;   /* red – wrong note */
   --nf-warn:         #CAA316;   /* amber – close note */
   --nf-blue:         #03CEA4;   /* blue – target note */
-  --nf-blue-dim:     #027961;
+  --nf-blue-dim:     #1F6F5F;
 
   --nf-text:         #f0f0f8;
   --nf-text-muted:   #8a8a99;

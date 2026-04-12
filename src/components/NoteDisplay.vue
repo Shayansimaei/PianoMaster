@@ -29,19 +29,33 @@
       </div>
     </div>
   </div>
+  <div  v-if="targetNotes && isLesson" class="note-display-inline" :class="`note-display--${result}`">
+    <!-- Match indicator -->
+    <div v-if="targetNotes!.size>2 && chordName">
+      <div class="chord-name">{{ chordName }}</div>
+     <div class="note-cell-inline note-cell--target">
+      <div v-for=" note in chordNotes?.notes" class="note-name" :class="{ 'has-accidental': note.includes('#') }">
+        <span class="note-letter-chord">{{note}}</span>
+      </div>
+    </div>
+    </div>
+  </div>
 </template>
+
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { MatchResult } from '@/types'
 import { midiToNoteInfo } from '@/utils/noteEngine'
+import { chordFromSet , midiToChord } from '@/utils/midiToChord';
 
 const props = defineProps<{
   targetNote: number | null
   targetNotes?: Set<number>      // full chord — if set, shows chord size
   playedNote: number | null
   result: MatchResult
-  heldCorrect?: Set<number>      // notes already hit in current chord
+  heldCorrect?: Set<number>,
+  isLesson?:boolean     // notes already hit in current chord
 }>()
 
 const targetInfo = computed(() => props.targetNote !== null ? midiToNoteInfo(props.targetNote) : null)
@@ -62,6 +76,8 @@ const { letter: targetLetter, accidental: targetAccidental } = computed(() =>
 
 const playedLetter = computed(() => splitNoteName(playedInfo.value?.name).letter)
 const playedAccidental = computed(() => splitNoteName(playedInfo.value?.name).accidental)
+const chordName = computed(() => props.targetNotes? chordFromSet(props.targetNotes).chord:null)
+const chordNotes = computed(() => props.targetNotes? midiToChord([...props.targetNotes]):null)
 
 const matchIcon = computed(() => ({
   correct:     '✓',
@@ -101,6 +117,16 @@ const playedNoteClass = computed(() => ({
   padding: 20px 16px;
   transition: border-color 200ms all;
 }
+.note-display-inline {
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  background: var(--nf-surface-2);
+  border: 1px solid var(--nf-border);
+  border-radius: 16px;
+  padding: 20px 16px;
+  transition: border-color 200ms all;
+}
 
 .note-display--correct { border-color: var(--nf-accent); }
 .note-display--wrong   { border-color: var(--nf-error); }
@@ -110,6 +136,12 @@ const playedNoteClass = computed(() => ({
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 6px;
+}
+.note-cell-inline{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
   gap: 6px;
 }
 
@@ -134,7 +166,13 @@ const playedNoteClass = computed(() => ({
   letter-spacing: -0.04em;
   color: var(--nf-text);
 }
-
+.note-letter-chord{
+ font-family: var(--nf-font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--nf-blue-dim);
+}
 .note-cell--target .note-letter {
   color: var(--nf-blue);
 }
@@ -175,7 +213,15 @@ const playedNoteClass = computed(() => ({
   transition: all 200ms ease;
   color: var(--nf-text-muted);
 }
+.chord-name{
+  font-size: 1.8rem;
+  line-height: 1;
+  transition: all 200ms ease;
+  text-align: center;
+  color: var(--nf-warn);
+  padding-bottom: .5rem;
 
+}
 .note-display--correct  .match-icon { color: var(--nf-accent); }
 .note-display--wrong    .match-icon { color: var(--nf-error); }
 .note-display--octave-off .match-icon { color: var(--nf-warn); }
