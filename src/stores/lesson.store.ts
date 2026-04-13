@@ -616,8 +616,11 @@ export const useLessonStore = defineStore('lessons', () => {
     if (lesson) lesson.status = 'in-progress'
   }
 
-  function advanceStep() {
+  function nextStep() {
     currentStepIndex.value++
+  }
+  function lastStep() {
+    currentStepIndex.value--
   }
 
   function recordAttempt(correct: boolean) {
@@ -657,7 +660,8 @@ export const useLessonStore = defineStore('lessons', () => {
     progressPercent,
     isComplete,
     startLesson,
-    advanceStep,
+    nextStep,
+    lastStep,
     recordAttempt,
     completeLesson,
     resetLesson,

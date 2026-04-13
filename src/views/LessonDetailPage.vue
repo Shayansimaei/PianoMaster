@@ -14,7 +14,7 @@
 
     <ion-content>
       <!-- Completed -->
-      <div v-if="lessonStore.isComplete" class="complete-screen">
+      <div v-if="isComplete" class="complete-screen">
         <div class="complete-icon">🎉</div>
         <h2 class="complete-title">Lesson Complete!</h2>
         <div class="score-display">
@@ -77,6 +77,17 @@
             <span class="stat-num mono" :style="{ color: accuracyColor }">{{ accuracy }}%</span>
             <span class="stat-label">Accuracy</span>
           </div>
+          <div class="lesson-footer">
+          <ion-button fill="clear" size="small" :disabled="isFristStep" class="skip-btn" @click="lastStep">
+          <ion-icon slot="end" :icon="arrowBackCircleOutline" />
+          </ion-button>
+          <ion-button fill="clear" size="small" :class="`${ loopStatus? `loopEnable`:`loopDisable` }`" class="skip-btn" @click="loop">
+            <ion-icon slot="end" :icon="repeatOutline" />
+          </ion-button>
+          <ion-button fill="clear" size="small" class="skip-btn" @click="nextStep">
+          <ion-icon slot="end" :icon="arrowForwardCircleOutline" />
+          </ion-button>
+          </div>
         </div>
 
         <div class="keyboard-wrap">
@@ -94,12 +105,8 @@
           />
         </div>
 
-        <div class="lesson-footer">
-          <ion-button fill="clear" size="small" class="skip-btn" @click="skipStep">
-            Skip this note
-            <ion-icon slot="end" :icon="playSkipForwardOutline" />
-          </ion-button>
-        </div>
+        
+        
       </div>
     </ion-content>
   </ion-page>
@@ -110,10 +117,10 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonButtons, IonBackButton, IonButton, IonIcon,
+  IonButtons, IonBackButton, IonButton, IonIcon,IonToggle
   
 } from '@ionic/vue'
-  import {playSkipForwardOutline,informationCircleOutline } from 'ionicons/icons';
+  import {arrowBackCircleOutline,arrowForwardCircleOutline,informationCircleOutline,repeatOutline } from 'ionicons/icons';
 
 import PianoKeyboard from '@/components/PianoKeyboard.vue'
 import NoteDisplay from '@/components/NoteDisplay.vue'
@@ -121,7 +128,6 @@ import { useMidi } from '@/composables/useMidi'
 import { useAudioSampler } from '@/composables/useAudioSampler'
 import { useLessonStore } from '@/stores/lesson.store'
 import type { MatchResult } from '@/types'
-import { chordFromSet } from '@/utils/midiToChord'
 
 const route       = useRoute()
 const lessonStore = useLessonStore()
@@ -136,7 +142,9 @@ const wrongNotes    = ref(new Set<number>())
 const lastPlayedNote = ref<number | null>(null)
 const matchResult   = ref<MatchResult>('idle')
 const feedbackVisible = ref(false)
-const feedbackText    = ref('')
+const feedbackText   = ref('')
+let loopStatus  = ref(false)
+
 let feedbackTimer: ReturnType<typeof setTimeout> | null = null
 let advanceTimer:  ReturnType<typeof setTimeout> | null = null
 
@@ -153,7 +161,8 @@ const currentTargetNote = computed((): number | null => {
   const unplayed = currentStep.value.targetNotes.find(m => !heldCorrect.value.has(m))
   return unplayed ?? currentStep.value.targetNotes[0] ?? null
 })
-const chordName = computed(() => chordFromSet(activeNotes.value).chord)
+const isFristStep = computed(() => (lessonStore.currentStepIndex)==0)
+const isComplete = computed(() => lessonStore.isComplete && !loopStatus.value)
 
 const wrongNote = computed(() =>
   wrongNotes.value.size > 0 ? [...wrongNotes.value][0] : null
@@ -189,13 +198,14 @@ function onNoteOn(midiNote: number) {
       showFeedback(isChordStep.value ? '✓ Chord!' : '✓ Correct!')
       if (advanceTimer) clearTimeout(advanceTimer)
       advanceTimer = setTimeout(() => {
-        lessonStore.advanceStep()
-        if (lessonStore.isComplete) lessonStore.completeLesson()
+        if(lessonStore.isComplete && !loopStatus.value) lessonStore.completeLesson();
+        lessonStore.nextStep()
+        if(lessonStore.isComplete && loopStatus.value) restartLesson()
         heldCorrect.value  = new Set()
         wrongNotes.value   = new Set()
         matchResult.value  = 'idle'
-        lastPlayedNote.value = null
-      }, 500)
+        lastPlayedNote.value = null}
+      , 500)
     } else {
       // Partial chord — show progress, no penalty
       matchResult.value = 'idle'
@@ -231,15 +241,32 @@ function showFeedback(text: string) {
   feedbackTimer = setTimeout(() => { feedbackVisible.value = false }, 1000)
 }
 
-function skipStep() {
+function nextStep() {
   if (advanceTimer) clearTimeout(advanceTimer)
-  lessonStore.advanceStep()
-  if (lessonStore.isComplete) lessonStore.completeLesson()
+  if (lessonStore.isComplete&&!loopStatus.value) lessonStore.completeLesson()
+    lessonStore.nextStep()
+  if(lessonStore.isComplete&&loopStatus.value) restartLesson();
+  heldCorrect.value  = new Set()
+  wrongNotes.value   = new Set()
+  matchResult.value  = 'idle'
+  lastPlayedNote.value = null
+
+
+}
+function loop(){
+  loopStatus.value=!loopStatus.value
+}
+function lastStep() {
+  if (advanceTimer&&currentStep.value) clearTimeout(advanceTimer)
+  if(lessonStore.currentStepIndex>=0){
+  lessonStore.lastStep()
   heldCorrect.value  = new Set()
   wrongNotes.value   = new Set()
   matchResult.value  = 'idle'
   lastPlayedNote.value = null
 }
+}
+
 
 function restartLesson() {
   lessonStore.startLesson(route.params.id as string)
@@ -310,6 +337,7 @@ onUnmounted(() => {
   font-weight: 700;
   color: var(--nf-blue);
   letter-spacing: -0.01em;
+  padding: .5rem;
 }
 .chord-progress {
   font-size: 0.72rem;
@@ -323,6 +351,13 @@ onUnmounted(() => {
   position: absolute;
   left: auto;
 }
+.loopEnable{
+  color: var(--nf-blue);
+}
+.loopDisable{
+  color: var(--nf-text-muted);
+}
+
 .complete-screen {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 16px; padding: 40px 24px; min-height: 70vh; text-align: center;

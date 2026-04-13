@@ -1,7 +1,18 @@
 <template>
   <div class="note-display" :class="`note-display--${result}`">
     <!-- Target note -->
-    <div class="note-cell note-cell--target">
+      <div  v-if="targetNotes && isLesson " class="note-display-inline" :class="`note-display--${result}`">
+    <!-- Match indicator -->
+    <div v-if="targetNotes!.size>2 && chordName">
+      <div class="chord-name">{{ chordName }}</div>
+     <div class="note-cell-inline note-cell--target">
+      <div v-for=" note in chordNotes?.notes" class="note-name" :class="{ 'has-accidental': note.includes('#') }">
+        <span class="note-letter-chord">{{note}}</span>
+      </div>
+    </div>
+    </div>
+  </div>
+    <div v-if="!isLesson" class="note-cell note-cell--target">
       <div class="cell-label">PLAY</div>
       <div class="note-name" :class="{ 'has-accidental': targetInfo?.name.includes('#') }">
         <span class="note-letter">{{ targetLetter }}</span>
@@ -28,18 +39,9 @@
         <span v-else class="note-letter" style="visibility: hidden;"> *</span>
       </div>
     </div>
+    
   </div>
-  <div  v-if="targetNotes && isLesson" class="note-display-inline" :class="`note-display--${result}`">
-    <!-- Match indicator -->
-    <div v-if="targetNotes!.size>2 && chordName">
-      <div class="chord-name">{{ chordName }}</div>
-     <div class="note-cell-inline note-cell--target">
-      <div v-for=" note in chordNotes?.notes" class="note-name" :class="{ 'has-accidental': note.includes('#') }">
-        <span class="note-letter-chord">{{note}}</span>
-      </div>
-    </div>
-    </div>
-  </div>
+ 
 </template>
 
 
@@ -122,10 +124,7 @@ const playedNoteClass = computed(() => ({
   align-items: center;
   gap: 12px;
   background: var(--nf-surface-2);
-  border: 1px solid var(--nf-border);
-  border-radius: 16px;
   padding: 20px 16px;
-  transition: border-color 200ms all;
 }
 
 .note-display--correct { border-color: var(--nf-accent); }
@@ -158,6 +157,9 @@ const playedNoteClass = computed(() => ({
   gap: 1px;
   line-height: 1;
 }
+@media (max-width: 768px){
+
+}
 
 .note-letter {
   font-family: var(--nf-font-display);
@@ -172,6 +174,15 @@ const playedNoteClass = computed(() => ({
   font-weight: 800;
   letter-spacing: -0.04em;
   color: var(--nf-blue-dim);
+}
+@media (max-width: 768px){
+  .note-letter-chord{
+ font-family: var(--nf-font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--nf-blue-dim);
+}
 }
 .note-cell--target .note-letter {
   color: var(--nf-blue);
@@ -214,12 +225,12 @@ const playedNoteClass = computed(() => ({
   color: var(--nf-text-muted);
 }
 .chord-name{
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   line-height: 1;
   transition: all 200ms ease;
   text-align: center;
-  color: var(--nf-warn);
-  padding-bottom: .5rem;
+  color: var(--nf-text-muted);
+  padding-bottom: .8rem;
 
 }
 .note-display--correct  .match-icon { color: var(--nf-accent); }
@@ -242,4 +253,8 @@ const playedNoteClass = computed(() => ({
 .note-name--correct .note-letter { color: var(--nf-accent); }
 .note-name--wrong   .note-letter { color: var(--nf-error); }
 .note-name--warn    .note-letter { color: var(--nf-warn); }
+@media (max-width: 768px){
+.note-letter-chord{font-size: 1rem;}
+.chord-name{font-size: .8rem;}
+}
 </style>
