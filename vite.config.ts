@@ -12,7 +12,7 @@ export default defineConfig({
   },
  
   // GitHub Pages serves from /noteflow/ — must match your repo name exactly
-  base: process.env.NODE_ENV === 'production' ? '/noteflow/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/' : '/',
  
   server: {
     port: 5173,

@@ -8,7 +8,7 @@
         {{ midiStore.connectedDevices.length === 1 ? 'device' : 'devices' }}
       </span>
       <span v-else>No devices</span>
-      <ion-icon name="chevron-forward-outline" />
+      <ion-icon :icon="chevronForwardCircleOutline" />
     </router-link>
   </div>
 </template>
@@ -17,6 +17,7 @@
 import { computed } from 'vue'
 import { IonIcon } from '@ionic/vue'
 import { useMidiStore } from '@/stores/midi.store'
+import {chevronForwardCircleOutline } from 'ionicons/icons';
 
 const midiStore = useMidiStore()
 

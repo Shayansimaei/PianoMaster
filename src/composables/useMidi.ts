@@ -92,10 +92,10 @@ export function useMidi() {
     // ─── Dynamic device detection ────────────────────────────────────────
     access.onstatechange = (event: MIDIConnectionEvent) => {
       const port = event.port
-      if (port.type === 'input') {
+      if (port!.type === 'input') {
         const input = port as MIDIInput
 
-        if (port.state === 'connected') {
+        if (port!.state === 'connected') {
           attachInput(input)
           store.addDevice({
             id: input.id,
