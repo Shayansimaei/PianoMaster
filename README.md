@@ -2,7 +2,7 @@
 
 A MIDI teaching application built with **Vue 3 + Ionic + TypeScript**.  
 Detects MIDI keyboards dynamically, plays real piano samples, and guides users through notes across three modes.
-[Demo]([https://www.example.com](https://noteflowteacher.netlify.app/))
+[Demo](https://www.example.com](https://noteflowteacher.netlify.app/)
 
 ---
 
