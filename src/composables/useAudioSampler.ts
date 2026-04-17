@@ -31,20 +31,24 @@ export function useAudioSampler() {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const volume = ref(0) // dB
+  let timeOut=setInterval(async ()=>{
+    if(!loaded.value)
+      await init()
 
+  },2000)
   async function init() {
-    if (sampler && loaded.value) return
+    if (sampler && loaded.value) return loaded.value
     loading.value = true
     error.value = null
-
     await Tone.start()
-
+    timeOut
     return new Promise<void>((resolve, reject) => {
       sampler = new Tone.Sampler({
         urls: urlsWithBase,
         onload: () => {
           loaded.value = true
           loading.value = false
+          clearInterval(timeOut)
           resolve()
         },
         onerror: (err) => {
@@ -58,7 +62,11 @@ export function useAudioSampler() {
   }
 
   function noteOn(midi: number, velocity = 100) {
-    if (!sampler || !loaded.value) return
+    if (!sampler || !loaded.value) {
+      return
+
+
+    } 
     const { label } = midiToNoteInfo(midi)
     const gainDb = Tone.gainToDb(velocity / 127)
     sampler.triggerAttack(label, Tone.now(), velocity / 127)

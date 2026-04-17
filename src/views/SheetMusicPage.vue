@@ -226,8 +226,6 @@
         <!-- ── Piano keyboard ─────────────────────────────────────── -->
         <div class="keyboard-wrap" v-if="currentPiece">
           <PianoKeyboard
-            :start-midi="36"
-            :end-midi="96"
             :active-notes="activeNotes"
             :target-notes="requiredMidis"
             :target-note="currentTargetNote"

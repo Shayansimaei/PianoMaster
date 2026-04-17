@@ -92,8 +92,6 @@
 
         <div class="keyboard-wrap">
           <PianoKeyboard
-            :start-midi="36"
-            :end-midi="96"
             :active-notes="activeNotes"
             :target-note="currentTargetNote"
             :target-notes="requiredMidis"

@@ -17,7 +17,7 @@
           {{ permissionError }}
         </div>
 
-        <div v-if="sampler.loading.value" class="banner banner--info">
+        <div v-if="IsSamplerLoaded" class="banner banner--info">
           <ion-icon :icon="hourglassOutline" />
           Loading piano samples…
         </div>
@@ -72,8 +72,6 @@
 
         <div class="keyboard-container">
           <PianoKeyboard
-            :start-midi="36"
-            :end-midi="96"
             :active-notes="activeNotes"
             :target-note="targetNote"
             :wrong-note="wrongNote"
@@ -81,6 +79,7 @@
             :key-height="keyboardHeight"
             @note-on="onMouseNoteOn"
             @note-off="onMouseNoteOff"
+            @range-change="onRangeChange"
           />
         </div>
 
@@ -96,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted   } from 'vue'
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
   IonButton, IonButtons, IonIcon, IonRange, IonToggle,
@@ -118,7 +117,6 @@ const midiStore = useMidiStore()
 const { permissionError } = midi
 const sampler = useAudioSampler()
 const volumeDb = ref(0)
-
 const targetNote = ref<number>(60)
 const lastPlayedNote = ref<number | null>(null)
 const matchResult = ref<MatchResult>('idle')
@@ -129,8 +127,11 @@ const activeNotes = ref(new Set<number>())
 
 const targetNoteLabel = computed(() => midiToNoteInfo(targetNote.value).label)
 const keyboardHeight = computed(() => window.innerWidth < 480 ? 120 : 160)
-
-function handleNoteOn(midiNum: number, velocity = 100) {
+const IsSamplerLoaded = computed(() => {return (sampler.loading.value && !sampler.loaded.value)})
+const startMidi=ref(36);
+const endMidi=ref(96);
+sampler.loading.value
+async function handleNoteOn(midiNum: number, velocity = 100) {
   activeNotes.value = new Set([...activeNotes.value, midiNum])
   lastPlayedNote.value = midiNum
   sampler.noteOn(midiNum, velocity)
@@ -187,16 +188,26 @@ function onVolumeChange(e: CustomEvent) {
 function onKeyDown(e: KeyboardEvent) {
   if (e.code === 'Space') { e.preventDefault(); randomTarget() }
 }
-
+async function init(){
+    await midi.init()
+    await sampler.init()
+    window.addEventListener('keydown', onKeyDown)
+}
 onMounted(async () => {
-  await midi.init()
-  await sampler.init()
-  window.addEventListener('keydown', onKeyDown)
+await init()
+ 
 })
 onUnmounted(() => {
   sampler.allNotesOff()
   window.removeEventListener('keydown', onKeyDown)
 })
+function onRangeChange(start: number, end: number):void{
+  console.log(start,end)
+  startMidi.value=start;
+  endMidi.value=end;
+
+
+}
 </script>
 
 <style scoped>
@@ -255,6 +266,10 @@ onUnmounted(() => {
 @keyframes streakPop {
   0% { transform: scale(0.85); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
+}
+@media (max-width: 768px){
+  .streak-row { display: none; }
+
 }
 .keyboard-container { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
 .footer-row { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; }
