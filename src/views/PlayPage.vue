@@ -5,6 +5,10 @@
         <ion-title>Free Play</ion-title>
         <ion-buttons slot="end">
           <DeviceStatusBar />
+           <ion-button fill="outline" size="small" class="random-btn" @click="gitHub">
+            <ion-icon :icon="logoGithub" herf="https://github.com/Shayansimaei/noteflow"/>
+            </ion-button>
+
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -100,7 +104,8 @@ import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
   IonButton, IonButtons, IonIcon, IonRange, IonToggle,
 } from '@ionic/vue'
-  import {volumeHighOutline,volumeLowOutline,shuffleOutline,chevronForwardOutline,chevronBackOutline,warningOutline,
+  import {volumeHighOutline,volumeLowOutline,shuffleOutline,
+    chevronForwardOutline,chevronBackOutline,warningOutline,logoGithub,
     hourglassOutline} from 'ionicons/icons';
 
 import PianoKeyboard from '@/components/PianoKeyboard.vue'
@@ -207,6 +212,9 @@ function onRangeChange(start: number, end: number):void{
   endMidi.value=end;
 
 
+}
+function gitHub(){
+  window.open("https://github.com/Shayansimaei/noteflow")
 }
 </script>
 

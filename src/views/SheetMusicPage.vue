@@ -253,7 +253,6 @@ import NoteDisplay from '@/components/NoteDisplay.vue'
 import DeviceStatusBar from '@/components/DeviceStatusBar.vue'
 import { useMidi } from '@/composables/useMidi'
 import { useAudioSampler } from '@/composables/useAudioSampler'
-import { matchNotes } from '@/utils/noteEngine'
 import { parseMidiFromFile } from '@/utils/midiFileParser'
 import type { SheetPiece, MatchResult, SheetNote } from '@/types'
 

@@ -4,6 +4,7 @@
       <ion-toolbar>
         <ion-title>MIDI Devices</ion-title>
       </ion-toolbar>
+      
     </ion-header>
 
     <ion-content>
@@ -12,7 +13,7 @@
         <!-- Status card -->
         <div class="status-card" :class="`status-card--${midiStore.status}`">
           <div class="status-icon">
-            <ion-icon :name="statusIcon" />
+            <ion-icon :icon="statusIcon" />
           </div>
           <div class="status-info">
             <p class="status-title">{{ statusTitle }}</p>
@@ -29,7 +30,7 @@
 
         <!-- Not supported warning -->
         <div v-if="!midi.supported.value" class="unsupported-box">
-          <ion-icon name="alert-circle-outline" />
+          <ion-icon :icon="alertCircleOutline" />
           <div>
             <strong>Web MIDI not supported</strong>
             <p>Use Chrome or Edge on desktop for full MIDI support.</p>
@@ -48,7 +49,7 @@
               @click="midiStore.selectDevice(device.id)"
             >
               <div class="device-icon">
-                <ion-icon name="musical-notes-outline" />
+                <ion-icon :icon="musicalNotesOutline" />
               </div>
               <div class="device-info">
                 <p class="device-name">{{ device.name }}</p>
@@ -65,11 +66,11 @@
 
         <!-- No devices -->
         <div v-else-if="midiStore.status === 'ready'" class="empty-state">
-          <ion-icon name="hardware-chip-outline" class="empty-icon" />
+          <ion-icon :icon="hardwareChipOutline" class="empty-icon" />
           <h3>No MIDI devices detected</h3>
           <p>Plug in a MIDI keyboard or controller via USB, then refresh.</p>
           <ion-button fill="outline" @click="initMidi">
-            <ion-icon slot="start" name="refresh-outline" />
+            <ion-icon slot="start" :icon="refreshOutline" />
             Refresh
           </ion-button>
         </div>
@@ -127,15 +128,15 @@
           <h3 class="section-title">Tips</h3>
           <div class="tip-list">
             <div class="tip">
-              <ion-icon name="bulb-outline" />
+              <ion-icon :icon="bulbOutline" />
               <p>MIDI devices are detected automatically — just plug in and play.</p>
             </div>
             <div class="tip">
-              <ion-icon name="bulb-outline" />
+              <ion-icon :icon="bulbOutline" />
               <p>Chrome and Edge have the best Web MIDI support. Safari does not support it.</p>
             </div>
             <div class="tip">
-              <ion-icon name="bulb-outline" />
+              <ion-icon :icon="bulbOutline" />
               <p>If your device isn't detected, try unplugging and replugging it.</p>
             </div>
           </div>
@@ -150,11 +151,13 @@
 import { computed, onMounted } from 'vue'
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonButton, IonButtons, IonIcon
+  IonButton, IonIcon
 } from '@ionic/vue'
 import { useMidi } from '@/composables/useMidi'
 import { useMidiStore } from '@/stores/midi.store'
 import { midiToNoteInfo } from '@/utils/noteEngine'
+import { bulbOutline,hardwareChipOutline,
+refreshOutline,musicalNotesOutline,alertCircleOutline,starOutline} from 'ionicons/icons';
 
 const midi = useMidi()
 const midiStore = useMidiStore()
