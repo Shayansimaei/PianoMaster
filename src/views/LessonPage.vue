@@ -16,6 +16,7 @@
         </p>
 
         <div class="filter-row">
+            <ion-input label="Search Lesson" label-placement="floating" fill="outline" placeholder="Chords" v-model="SearchKeyword"></ion-input>
           <button
             v-for="f in filters"
             :key="f"
@@ -60,7 +61,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonInput
 } from '@ionic/vue'
 import DeviceStatusBar from '@/components/DeviceStatusBar.vue'
 import { useLessonStore } from '@/stores/lesson.store'
@@ -71,11 +72,13 @@ const lessonStore = useLessonStore()
 type Filter = 'All' | 'beginner' | 'intermediate' | 'advanced' | 'chords' | 'progression' | 'jazz' | 'scales'
 const filters: Filter[] = ['All', 'beginner', 'intermediate', 'advanced', 'chords', 'progression', 'jazz', 'scales']
 const activeFilter = ref<Filter>('All')
-
+const SearchKeyword = ref<string>('')
 const filteredLessons = computed(() => {
-  if (activeFilter.value === 'All') return lessonStore.lessons
+  let lessons=lessonStore.lessons;
+  if (SearchKeyword.value.length>0)(lessons=lessons.filter(l =>l.title.toLowerCase().includes(SearchKeyword.value.toLowerCase())))
+  if (activeFilter.value === 'All') return lessons
   if (activeFilter.value === 'beginner' || activeFilter.value === 'intermediate' || activeFilter.value === 'advanced') {
-    return lessonStore.lessons.filter(l => l.difficulty === activeFilter.value)
+    return lessons.filter(l => l.difficulty === activeFilter.value )
   }
   // Tag-based filters
   return lessonStore.lessons.filter(l => l.tags.includes(activeFilter.value))

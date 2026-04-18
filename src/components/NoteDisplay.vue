@@ -3,7 +3,7 @@
     <!-- Target note -->
       <div  v-if="targetNotes && isLesson " class="note-display-inline" :class="`note-display--${result}`">
     <!-- Match indicator -->
-    <div v-if="targetNotes!.size>2 && chordName">
+    <div v-if="chordName">
       <div class="chord-name">{{ chordName }}</div>
      <div class="note-cell-inline note-cell--target">
       <div v-for=" note in chordNotes?.notes" class="note-name" :class="{ 'has-accidental': note.includes('#') }">
@@ -72,9 +72,12 @@ function splitNoteName(label: string | undefined) {
   }
 }
 
-const { letter: targetLetter, accidental: targetAccidental } = computed(() =>
-  splitNoteName(targetInfo.value?.name)
-).value
+const targetLetter  = computed(() =>
+  splitNoteName(targetInfo.value?.label).letter
+)
+const targetAccidental = computed(() =>
+  splitNoteName(targetInfo.value?.label).accidental
+)
 
 const playedLetter = computed(() => splitNoteName(playedInfo.value?.name).letter)
 const playedAccidental = computed(() => splitNoteName(playedInfo.value?.name).accidental)

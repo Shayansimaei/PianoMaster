@@ -58,11 +58,11 @@
           :is-lesson="true"
         />
 
-        <div name="feedback" :class="`${ feedbackVisible? `feedback-visible`:`feedback-none-visible` }`" >
+        <!-- <div name="feedback" :class="`${ feedbackVisible? `feedback-visible`:`feedback-none-visible` }`" >
           <div class="feedback-flash" :class="`feedback-flash--${matchResult}`">
             {{ feedbackText }}
           </div>
-        </div>
+        </div> -->
 
         <div class="stats-row">
           <div class="stat">

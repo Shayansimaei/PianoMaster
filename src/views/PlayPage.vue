@@ -29,7 +29,7 @@
         <NoteDisplay
           :target-note="targetNote"
           :played-note="lastPlayedNote"
-          :result="matchResult"
+          :result="warmUp?matchResult:'idle'"
           class="note-display-card"
         />
 
@@ -81,6 +81,7 @@
             :wrong-note="wrongNote"
             :show-labels="showLabels"
             :key-height="keyboardHeight"
+            :warm-up="!warmUp"
             @note-on="onMouseNoteOn"
             @note-off="onMouseNoteOff"
             @range-change="onRangeChange"
@@ -90,6 +91,9 @@
         <div class="footer-row">
           <ion-toggle v-model="showLabels" size="small">
             <span class="toggle-label">Note labels</span>
+          </ion-toggle>
+          <ion-toggle v-model="warmUp" size="small">
+            <span class="toggle-label">Warm up</span>
           </ion-toggle>
         </div>
 
@@ -128,6 +132,8 @@ const matchResult = ref<MatchResult>('idle')
 const wrongNote = ref<number | null>(null)
 const streak = ref(0)
 const showLabels = ref(true)
+const warmUp = ref(true)
+
 const activeNotes = ref(new Set<number>())
 
 const targetNoteLabel = computed(() => midiToNoteInfo(targetNote.value).label)

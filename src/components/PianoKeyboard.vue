@@ -154,7 +154,8 @@ const props = withDefaults(defineProps<{
   keyHeight?:   number
   // Initial octave settings (used when showControls = true)
   initialOctave?: number    // starting octave (default: 4 = C4)
-  initialSpan?:   number    // octaves to show (default: 2)
+  initialSpan?:   number
+  warmUp?:boolean    // octaves to show (default: 2)
 }>(), {
   activeNotes:   () => new Set(),
   targetNote:    null,
@@ -216,11 +217,11 @@ const blackKeyWidthPct = computed(() => 60 / totalWhiteKeys.value)
 // ─── Key class ────────────────────────────────────────────────────────────────
 function keyClass(midi: number) {
   const isActive    = props.activeNotes.has(midi)
-  const isTarget    = props.targetNotes.has(midi) || props.targetNote === midi
-  const isWrong     = props.wrongNote === midi && !isTarget
-  const isCorrect   = isTarget && isActive
+  const isTarget    = (props.targetNotes.has(midi) || props.targetNote === midi)&&!props.warmUp
+  const isWrong     = (props.wrongNote === midi && !isTarget)&&!props.warmUp
+  const isCorrect   = isTarget && isActive &&!props.warmUp
   const isOctaveOff = !isTarget &&
-    [...props.targetNotes].some(t => t % 12 === midi % 12) && isActive
+    [...props.targetNotes].some(t => t % 12 === midi % 12) && isActive && !props.warmUp
   // Scale highlighting — dim keys outside the scale
   const inScale     = scaleNotes.value.size === 0 || scaleNotes.value.has(midi % 12)
 
