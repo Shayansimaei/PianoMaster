@@ -1,15 +1,15 @@
-# NoteFlow 🎹
+# PianoMaster 🎹
 
 A MIDI teaching application built with **Vue 3 + Ionic + TypeScript**.  
 Detects MIDI keyboards dynamically, plays real piano samples, and guides users through notes across three modes.
-[Demo](https://noteflowteacher.netlify.app/)
+[Demo](https://PianoMasterteacher.netlify.app/)
 
 ---
 
 ## Quick Start
 
 ```bash
-cd noteflow
+cd PianoMaster
 npm install
 npm run dev
 ```
