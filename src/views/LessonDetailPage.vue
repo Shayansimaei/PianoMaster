@@ -57,6 +57,17 @@
           :held-correct="heldCorrect"
           :is-lesson="true"
         />
+        <ion-button fill="clear" size="small" :class="`${ Sheet? `loopEnable`:`loopDisable` }`" class="skip-btn" @click="SheetVis">
+            <ion-icon slot="end" :icon="eyeOutline" />
+          </ion-button>
+        <SheetDisplay
+        v-if="Sheet"
+        :steps="sheetSteps"
+        :title="lessonStore.currentLesson?.title"
+        :current-chord-idx="lessonStore.currentStepIndex"
+        :held-correct="heldCorrect"
+         :played-notes="activeNotes"
+        />
 
         <!-- <div name="feedback" :class="`${ feedbackVisible? `feedback-visible`:`feedback-none-visible` }`" >
           <div class="feedback-flash" :class="`feedback-flash--${matchResult}`">
@@ -118,9 +129,13 @@ import {
   IonButtons, IonBackButton, IonButton, IonIcon,IonToggle
   
 } from '@ionic/vue'
-  import {arrowBackCircleOutline,arrowForwardCircleOutline,informationCircleOutline,repeatOutline } from 'ionicons/icons';
+  import {arrowBackCircleOutline,arrowForwardCircleOutline,informationCircleOutline
+    ,repeatOutline,
+  eyeOutline } from 'ionicons/icons';
 
 import PianoKeyboard from '@/components/PianoKeyboard.vue'
+import SheetDisplay, { LessonDisplayStep } from '@/components/SheetDisplay.vue'
+
 import NoteDisplay from '@/components/NoteDisplay.vue'
 import { useMidi } from '@/composables/useMidi'
 import { useAudioSampler } from '@/composables/useAudioSampler'
@@ -141,6 +156,8 @@ const lastPlayedNote = ref<number | null>(null)
 const matchResult   = ref<MatchResult>('idle')
 const feedbackVisible = ref(false)
 const feedbackText   = ref('')
+const Sheet   = ref(true)
+
 let loopStatus  = ref(false)
 
 let feedbackTimer: ReturnType<typeof setTimeout> | null = null
@@ -177,6 +194,10 @@ const accuracyColor = computed(() =>
 const finalScorePercent = computed(() =>
   !lessonStore.attempts ? 0 : Math.round((lessonStore.score / lessonStore.attempts) * 100)
 )
+const sheetSteps= computed(():LessonDisplayStep[]  =>
+  lessonStore.currentLesson?.steps.map(s => ({ midis: s.targetNotes })) ?? []
+)
+
 
 // ─── Note handling ────────────────────────────────────────────────────────────
 function onNoteOn(midiNote: number) {
@@ -253,6 +274,9 @@ function nextStep() {
 }
 function loop(){
   loopStatus.value=!loopStatus.value
+}
+function SheetVis(){
+  Sheet.value=!Sheet.value
 }
 function lastStep() {
   if (advanceTimer&&currentStep.value) clearTimeout(advanceTimer)

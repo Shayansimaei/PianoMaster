@@ -27,7 +27,7 @@
         </div>
 
         <NoteDisplay
-          :target-note="targetNote"
+          :target-note="warmUp?targetNote:lastPlayedNote"
           :played-note="lastPlayedNote"
           :result="warmUp?matchResult:'idle'"
           class="note-display-card"
@@ -75,6 +75,7 @@
         </div>
 
         <div class="keyboard-container">
+         
           <PianoKeyboard
             :active-notes="activeNotes"
             :target-note="targetNote"

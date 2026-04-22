@@ -33,12 +33,31 @@
 
           <!-- Import button -->
           <button class="piece-btn piece-btn--import" @click="triggerFileInput">
-            <ion-icon name="add-circle-outline" />
+            <ion-icon :icon="addCircleOutline" />
             <span class="piece-title">Import .mid</span>
             <span class="piece-composer mono">drag & drop or click</span>
           </button>
+          <button class="piece-btn piece-btn--import" @click="showTextImport = true">
+            <ion-icon :icon="codeOutline" />
+            <span class="piece-title">Import text</span>
+            <span class="piece-composer mono">paste notation</span>
+          </button>
+          <button class="piece-btn piece-btn--import" @click="isNoteDisplay = !isNoteDisplay">
+            <ion-icon :icon="eyeOutline" />
+            <span class="piece-title">Play And Heard</span>
+            <span class="piece-composer mono">paste notation</span>
+          </button>
         </div>
 
+        
+        </div>
+         <MidiPlayerBar
+          v-if="currentPiece?.id"
+          :piece="currentPiece"
+          :key="currentPiece.id"
+          @beat-change="onBeatChange"
+          @chord-change="onChordChange"
+        />
         <!-- Hidden file input -->
         <input
           ref="fileInputRef"
@@ -72,7 +91,7 @@
 
         <!-- ── Import loading ────────────────────────────────────── -->
         <div v-if="importing" class="banner banner--info">
-          <ion-icon name="hourglass-outline" />
+          <ion-icon :icon="hourglassOutline" />
           Parsing MIDI file…
         </div>
 
@@ -92,108 +111,25 @@
         </div>
 
         <!-- ── Sheet canvas ──────────────────────────────────────── -->
-        <div
-          class="sheet-container"
-          ref="sheetRef"
-          @dragover.prevent="isDragging = true"
-          @dragleave="isDragging = false"
-          @drop.prevent="onDrop"
-        >
-          <svg
-            v-if="currentPiece && currentPiece.measures.length > 0"
-            :width="svgWidth"
-            :height="svgHeight"
-            class="sheet-svg"
-            viewBox="0 0 700 200"
-            preserveAspectRatio="xMinYMin meet"
-          >
-            <g v-for="(measure, mi) in visibleMeasures" :key="measure.number">
-              <g :transform="`translate(${measureX(mi)}, 0)`">
-                <!-- Staff lines -->
-                <line
-                  v-for="line in 5"
-                  :key="line"
-                  :x1="0" :y1="staffY(line - 1)"
-                  :x2="MEASURE_W" :y2="staffY(line - 1)"
-                  stroke="var(--nf-border)" stroke-width="1"
-                />
-                <!-- Bar line -->
-                <line
-                  :x1="MEASURE_W" :y1="STAFF_TOP"
-                  :x2="MEASURE_W" :y2="STAFF_BOT"
-                  stroke="var(--nf-border)" stroke-width="1.5"
-                />
-                <!-- Measure number -->
-                <text :x="4" :y="STAFF_TOP - 6"
-                  fill="var(--nf-text-dim)" font-family="Space Mono, monospace" font-size="9">
-                  {{ measure.number }}
-                </text>
+       <SheetDisplay
+          :piece="currentPiece"
+          :current-chord-idx="currentChordIdx"
+          :held-correct="heldCorrect"
+          :played-notes="activeNotes"
+          :wrong-notes="wrongNotes"
+          @note-click="playNote"
+          @dragover="isDragging = true"
+          @drop="onDrop"
+        />
+         
 
-                <!-- Notes in this measure -->
-                <g v-for="note in measure.notes" :key="note.id">
-                  <!-- Ledger lines for notes outside staff -->
-                  <line
-                    v-for="ledger in ledgerLines(note.midi)"
-                    :key="ledger"
-                    :x1="beatX(note.startBeat, measure.number) - 11"
-                    :y1="ledger"
-                    :x2="beatX(note.startBeat, measure.number) + 11"
-                    :y2="ledger"
-                    stroke="var(--nf-border)" stroke-width="1"
-                  />
+        <!-- ── Text import modal ──────────────────────────────────── -->
+        <TextImportModal
+          :is-open="showTextImport"
+          @close="showTextImport = false"
+          @import="onTextImport"
+        />
 
-                  <!-- Note head -->
-                  <ellipse
-                    :cx="beatX(note.startBeat, measure.number)"
-                    :cy="noteY(note.midi)"
-                    rx="7" ry="5"
-                    :fill="noteHeadFill(note)"
-                    :stroke="noteHeadStroke(note)"
-                    stroke-width="1.5"
-                    class="sheet-note"
-                    @click="playNote(note.midi)"
-                  />
-
-                  <!-- Stem -->
-                  <line
-                    :x1="beatX(note.startBeat, measure.number) + 6"
-                    :y1="noteY(note.midi)"
-                    :x2="beatX(note.startBeat, measure.number) + 6"
-                    :y2="noteY(note.midi) - 28"
-                    :stroke="noteHeadFill(note)"
-                    stroke-width="1.5"
-                  />
-
-                  <!-- Accidental -->
-                  <text
-                    v-if="isSharp(note.midi)"
-                    :x="beatX(note.startBeat, measure.number) - 16"
-                    :y="noteY(note.midi) + 4"
-                    fill="var(--nf-text-muted)"
-                    font-size="11"
-                  >♯</text>
-                  <text
-                    v-else-if="isFlat(note.midi)"
-                    :x="beatX(note.startBeat, measure.number) - 16"
-                    :y="noteY(note.midi) + 4"
-                    fill="var(--nf-text-muted)"
-                    font-size="11"
-                  >♭</text>
-                </g>
-              </g>
-            </g>
-          </svg>
-
-          <div v-else-if="currentPiece && currentPiece.measures.length === 0" class="empty-sheet">
-            <ion-icon name="warning-outline" />
-            No notes found in this file.
-          </div>
-
-          <div v-else class="empty-sheet">
-            <ion-icon name="document-text-outline" />
-            <p>Select a piece or drag a <strong>.mid</strong> file here</p>
-          </div>
-        </div>
 
         <!-- Measure navigation -->
         <div class="measure-nav" v-if="currentPiece && currentPiece.measures.length > MEASURES_PER_VIEW">
@@ -215,7 +151,7 @@
 
         <!-- ── Match panel ────────────────────────────────────────── -->
         <NoteDisplay
-          v-if="currentPiece"
+          v-if="currentPiece&&isNoteDisplay"
           :target-note="currentTargetNote"
           :target-notes="requiredMidis"
           :played-note="lastPlayedNote"
@@ -237,7 +173,6 @@
           />
         </div>
 
-      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -253,8 +188,13 @@ import NoteDisplay from '@/components/NoteDisplay.vue'
 import DeviceStatusBar from '@/components/DeviceStatusBar.vue'
 import { useMidi } from '@/composables/useMidi'
 import { useAudioSampler } from '@/composables/useAudioSampler'
+import TextImportModal from '@/components/TextImportModal.vue'
+import MidiPlayerBar from '@/components/MidiPlayerBar.vue'
 import { parseMidiFromFile } from '@/utils/midiFileParser'
 import type { SheetPiece, MatchResult, SheetNote } from '@/types'
+import SheetDisplay from '@/components/SheetDisplay.vue'
+import {hourglassOutline,addCircleOutline,
+codeOutline,eyeOutline} from 'ionicons/icons';
 
 // ─── Layout constants ────────────────────────────────────────────────────────
 const MEASURE_W       = 155
@@ -332,8 +272,29 @@ const BUILTIN_PIECES: (SheetPiece & { _imported?: boolean })[] = [
         {id:'n11',midi:64,startBeat:0,durationBeats:1,hand:'right'},
         {id:'n12',midi:67,startBeat:1,durationBeats:1,hand:'right'},
         {id:'n13',midi:67,startBeat:2,durationBeats:2,hand:'right'},
+      ]},{ number:5, notes:[
+        {id:'n1',midi:64,startBeat:0,durationBeats:1,hand:'right'},
+        {id:'n2',midi:62,startBeat:1,durationBeats:1,hand:'right'},
+        {id:'n3',midi:60,startBeat:2,durationBeats:1,hand:'right'},
+        {id:'n4',midi:62,startBeat:3,durationBeats:1,hand:'right'},
+      ]},
+      { number:6, notes:[
+        {id:'n5',midi:64,startBeat:0,durationBeats:1,hand:'right'},
+        {id:'n6',midi:64,startBeat:1,durationBeats:1,hand:'right'},
+        {id:'n7',midi:64,startBeat:2,durationBeats:2,hand:'right'},
+      ]},
+      { number:7, notes:[
+        {id:'n8',midi:62,startBeat:0,durationBeats:1,hand:'right'},
+        {id:'n9',midi:62,startBeat:1,durationBeats:1,hand:'right'},
+        {id:'n10',midi:62,startBeat:2,durationBeats:2,hand:'right'},
+      ]},
+      { number:8, notes:[
+        {id:'n11',midi:64,startBeat:0,durationBeats:1,hand:'right'},
+        {id:'n12',midi:67,startBeat:1,durationBeats:1,hand:'right'},
+        {id:'n13',midi:67,startBeat:2,durationBeats:2,hand:'right'},
       ]},
     ],
+    
   },
   {
     id: 'ode',
@@ -367,7 +328,7 @@ const BUILTIN_PIECES: (SheetPiece & { _imported?: boolean })[] = [
         {id:'o15',midi:62,startBeat:3,durationBeats:2,hand:'right'},
       ]},
     ],
-  },
+  }
 ]
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -381,6 +342,11 @@ const importing      = ref(false)
 const importError    = ref<string | null>(null)
 const isDragging     = ref(false)
 const fileInputRef   = ref<HTMLInputElement | null>(null)
+const playerBeat     = ref(0)
+const playerChordIdx = ref(0)
+const showTextImport = ref(false)
+const isNoteDisplay = ref(true)
+
 
 const currentPiece = computed(() => pieces.value.find(p => p.id === selectedPieceId.value) ?? null)
 
@@ -536,6 +502,13 @@ function onDrop(e: DragEvent) {
   isDragging.value = false
   if (e.dataTransfer?.files) handleFiles(e.dataTransfer.files)
 }
+function onTextImport(piece: any) {
+  // Ensure unique id
+  if (pieces.value.find(p => p.id === piece.id)) piece.id = piece.id + '-' + Date.now()
+  pieces.value.push({ ...piece, _imported: true })
+  selectPiece(piece.id)
+}
+
 
 // ─── Chord-aware note playback ───────────────────────────────────────────────
 //
@@ -633,7 +606,13 @@ const wrongNote = computed(() =>
 function onWindowDragEnter(e: DragEvent) {
   if (e.dataTransfer?.types.includes('Files')) isDragging.value = true
 }
+function onBeatChange(e:number){
+  playerBeat.value =e
 
+}
+function onChordChange(e:number){
+  playerChordIdx.value=e;
+}
 midi.onMidiEvent(event => {
   if (event.type === 'noteOn') onNoteOn(event.note)
   else onNoteOff(event.note)
