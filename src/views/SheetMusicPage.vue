@@ -130,23 +130,7 @@
         />
 
 
-        <!-- Measure navigation -->
-        <div class="measure-nav" v-if="currentPiece && currentPiece.measures.length > MEASURES_PER_VIEW">
-          <button class="nav-btn" :disabled="measureOffset === 0" @click="measureOffset = Math.max(0, measureOffset - MEASURES_PER_VIEW)">
-            ← Prev
-          </button>
-          <span class="mono nav-info">
-            Bars {{ measureOffset + 1 }}–{{ Math.min(measureOffset + MEASURES_PER_VIEW, currentPiece.measures.length) }}
-            / {{ currentPiece.measures.length }}
-          </span>
-          <button
-            class="nav-btn"
-            :disabled="measureOffset + MEASURES_PER_VIEW >= (currentPiece?.measures.length ?? 0)"
-            @click="measureOffset += MEASURES_PER_VIEW"
-          >
-            Next →
-          </button>
-        </div>
+        
 
         <!-- ── Match panel ────────────────────────────────────────── -->
         <NoteDisplay

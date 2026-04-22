@@ -16,7 +16,10 @@
           <ion-icon :icon="schoolOutline" />
           <ion-label>Lessons</ion-label>
         </ion-tab-button>
-
+         <ion-tab-button tab="chord" href="/tabs/chord">
+          <ion-icon :icon="musicalNotesOutline" />
+          <ion-label>Chords</ion-label>
+        </ion-tab-button>
         <ion-tab-button tab="sheet" href="/tabs/sheet">
           <ion-icon :icon="documentTextOutline" />
           <ion-label>Sheet</ion-label>
@@ -42,7 +45,7 @@ import {
   IonIcon,
   IonLabel,
 } from '@ionic/vue'
-  import { musicalNoteOutline,schoolOutline,documentTextOutline,hardwareChipOutline } from 'ionicons/icons';
+  import { musicalNoteOutline,schoolOutline,documentTextOutline,hardwareChipOutline,musicalNotesOutline} from 'ionicons/icons';
 
 </script>
 

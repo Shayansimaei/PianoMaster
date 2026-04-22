@@ -116,3 +116,49 @@ export interface SamplerState {
 // ─── APP STATE ─────────────────────────────────────────────────────────────
 
 export type AppMode = 'free-play' | 'lesson' | 'sheet-music'
+
+// ─── CHORD COMPANION ───────────────────────────────────────────────────────
+
+export type ChordCompanionDifficulty = 'beginner' | 'intermediate' | 'advanced'
+export type HandRole = 'left' | 'right'
+
+/** One hand's part in a chord pair */
+export interface HandChord {
+  chord:    ChordDef
+  /** MIDI notes transposed to the correct octave for this hand */
+  notes:    number[]
+  hand:     HandRole
+  /** Octave offset applied relative to the base chord definition */
+  octave:   number
+}
+
+/** A harmonic pair: left hand bass chord + right hand treble chord */
+export interface ChordPair {
+  id:         string
+  name:       string          // e.g. "C Major / G Major"
+  left:       HandChord       // bass (lower octave)
+  right:      HandChord       // treble (upper octave)
+  /** How many notes the player has held correctly so far this round */
+  description: string         // teaching note about why they sound good
+  tags:       string[]
+}
+
+/** A chord progression — a sequence of pairs to play through */
+export interface ChordProgression {
+  id:         string
+  title:      string
+  key:        string           // e.g. 'C major', 'A minor'
+  tempo:      number           // BPM suggestion
+  difficulty: ChordCompanionDifficulty
+  pairs:      ChordPair[]
+  loop:       boolean          // whether to loop back to start
+  description: string
+}
+
+/** Runtime state for one pair being played */
+export interface PairMatchState {
+  leftHeld:   Set<number>     // correct left-hand notes currently held
+  rightHeld:  Set<number>     // correct right-hand notes currently held
+  wrongNotes: Set<number>     // incorrect notes pressed
+  complete:   boolean         // both hands fully played
+}

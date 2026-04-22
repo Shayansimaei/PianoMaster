@@ -23,10 +23,14 @@ const routes: RouteRecordRaw[] = [
         path: 'lesson',
         component: () => import('@/views/LessonPage.vue'),
       },
+      
       {
         path: 'lesson/:id',
         component: () => import('@/views/LessonDetailPage.vue'),
       },
+      { path: 'chord',
+       component: () => import('@/views/ChordCompanionPage.vue') },
+
       {
         path: 'sheet',
         component: () => import('@/views/SheetMusicPage.vue'),
