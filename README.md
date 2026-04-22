@@ -1,173 +1,122 @@
-# PianoMaster 🎹
+# 🎹 Piano Master
 
-A MIDI teaching application built with **Vue 3 + Ionic + TypeScript**.  
-Detects MIDI keyboards dynamically, plays real piano samples, and guides users through notes across three modes.
-[Demo](https://PianoMasterteacher.netlify.app/)
+**Learn piano the smart way.** Piano Master is an interactive piano teaching application that connects to your MIDI keyboard, listens to what you play, and guides you note by note — from your very first C major scale to reading full sheet music.
+
+---
+## [Demo](https://noteflowteacher.netlify.app/)
+## Why Piano Master?
+
+Most piano apps make you watch videos or follow along passively. Piano Master is different — it *listens*. Connect any MIDI keyboard, pick a lesson or a piece, and the app responds to every note you play in real time. Hit the right note and it lights up green. Miss it and it shows you exactly where your fingers should be.
+
+Whether you're a complete beginner learning where Middle C is, or an intermediate player working through a Beethoven melody, Piano Master adapts to your level.
 
 ---
 
-## Quick Start
+## Features
+
+### 🎯 Real-Time Note Matching
+Play any note on your keyboard and Piano Master instantly tells you if it's correct, wrong, or the right note in the wrong octave. Visual feedback on the on-screen piano, audio playback through a real grand piano sampler, and a streak counter to keep you motivated.
+
+### 📚 Structured Lessons
+Six built-in lessons take you from zero to playing scales and intervals:
+
+| Lesson | What you learn |
+|--------|---------------|
+| Middle C & Friends | The five notes around C4 — your starting point |
+| C Major Scale | The foundation of Western music, up and down |
+| G Major Scale | One sharp, F# — a natural next step |
+| Pentatonic Improvisation | Five notes, infinite possibilities |
+| Chromatic Warm-Up | Every semitone C4→C5, builds finger independence |
+| Major & Minor Thirds | The most common melodic intervals by ear and hand |
+
+Each lesson tracks your **accuracy per session** and saves your **personal best**. Miss a note and try again — you only move forward when you get it right.
+
+### 🎼 Sheet Music Reader
+Read and play along with real staff notation rendered directly in the app:
+
+- **Treble and bass staves** rendered side by side — the number of staves adapts dynamically to the range of the piece
+- **Blue note** = what to play next · **Green note** = already played correctly
+- **Auto-advance** — the highlighted note moves forward as you play
+- **Chord detection** — the app recognises chords and shows their names below the staff
+- **Import any .mid file** — drag and drop a MIDI file and it's immediately playable
+- **Import from text notation** — paste a simple bracket notation and it converts to sheet music instantly
+- **MIDI playback** — let the app play the piece so you can listen and follow along before trying yourself, with speed control from 0.5× to 1.5×
+
+### 🎹 Interactive Piano Keyboard
+A fully playable on-screen piano keyboard — use it with mouse, touch, or your MIDI hardware:
+
+- Adjustable **octave range** and **span** (1, 2, or 3 octaves)
+- **Scale highlighting** — select any scale and root note; keys inside the scale glow green, outside keys dim
+- 9 scales: Major, Natural Minor, Harmonic Minor, Pentatonic Major, Pentatonic Minor, Blues, Whole Tone, Diminished, Chromatic
+
+### 🔌 Plug-and-Play MIDI
+Connect any USB MIDI keyboard and Piano Master detects it automatically — no drivers, no configuration. Unplug and plug in a different keyboard mid-session and the app updates itself in real time. The Devices page shows a live event monitor so you can verify your input is working.
+
+### 🔊 Real Grand Piano Sound
+Every note plays back through the **Salamander Grand Piano** — a professional-quality acoustic piano sample library. Velocity-sensitive: play softly and it sounds soft, hit a key hard and it responds with full dynamic range.
+
+---
+
+## Getting Started
 
 ```bash
-cd PianoMaster
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in **Chrome** or **Edge** (required for Web MIDI API).
+Open **Chrome** or **Edge** at `http://localhost:5173` — these are required for Web MIDI API support.
+
+**Connect your MIDI keyboard** before or after opening the app. Piano Master detects it either way.
+
+Start with **Free Play** to get comfortable, then move to **Lessons** when you're ready for structured practice.
 
 ---
 
-## Project Structure
+## Importing Your Own Music
+
+### From a .mid file
+In the Sheet Music tab, click **Import .mid** or drag a MIDI file anywhere onto the sheet area. The app parses the file, assigns notes to treble and bass staves, and makes it immediately playable.
+
+### From text notation
+Click **Import text** and paste notes in this simple format:
 
 ```
-src/
-├── composables/
-│   ├── useMidi.ts            # Web MIDI API — device detection + note streaming
-│   └── useAudioSampler.ts    # Tone.js — Salamander Grand Piano samples
-│
-├── stores/
-│   ├── midi.store.ts         # Pinia — connected devices, active notes, last event
-│   └── lesson.store.ts       # Pinia — lesson catalog, progress, scoring
-│
-├── utils/
-│   └── noteEngine.ts         # Music theory — MIDI↔note conversion, matching, layouts
-│
-├── types/
-│   └── index.ts              # Shared TypeScript types
-│
-├── components/
-│   ├── PianoKeyboard.vue     # Visual piano — highlights target/played/wrong notes
-│   ├── NoteDisplay.vue       # Target vs played — correct/wrong/octave-off states
-│   └── DeviceStatusBar.vue   # MIDI connection pill shown in toolbars
-│
-├── views/
-│   ├── PlayPage.vue          # Free play — match any note, streak counter
-│   ├── LessonPage.vue        # Lesson catalog with difficulty filter
-│   ├── LessonDetailPage.vue  # Active lesson — step-by-step with scoring
-│   ├── SheetMusicPage.vue    # SVG sheet music with follow-along highlighting
-│   └── DevicesPage.vue       # MIDI device manager + live event monitor
-│
-└── theme/
-    ├── variables.css         # Design tokens (colors, fonts, Ionic overrides)
-    └── global.css            # Base styles
+# My Song   (optional title)
+BPM=90      (optional tempo)
+
+[A3D4] G6F6G6A6 [A3C#4F#4] [A3C4] G6F6G6A6F6   ← right hand
+D4 D5A5F5 D5A5F5 A4 C#5A5G5                      ← left hand
 ```
+
+| Token | Meaning |
+|-------|---------|
+| `A3` | Single note |
+| `[A3D4]` | Chord (all notes played together) |
+| `D5A5F5` | Quick notes (separate, concatenated) |
+| `[A3D4ı]` | Dotted note (1.5× duration) |
+| Line 1 | Right hand (treble) |
+| Line 2 | Left hand (bass) |
 
 ---
 
-## Core Systems
+## Adding Your Own Lessons
 
-### 1. MIDI Input — `useMidi.ts`
-
-- Calls `navigator.requestMIDIAccess()` once (singleton)
-- Attaches `onmidimessage` handlers to all inputs
-- Listens on `access.onstatechange` for plug/unplug events
-- Broadcasts `MidiEvent` to all registered handlers via a shared `Set`
-- Each component subscribes with `midi.onMidiEvent(handler)` — auto-cleaned on unmount
-
-```ts
-const midi = useMidi()
-await midi.init()               // request browser permission
-midi.onMidiEvent((event) => {   // fires on every noteOn/noteOff
-  console.log(event.note, event.velocity)
-})
-```
-
-### 2. Audio Sampler — `useAudioSampler.ts`
-
-- Uses **Tone.js Sampler** with free Salamander Grand Piano samples
-- Samples hosted at `https://tonejs.github.io/audio/salamander/`
-- Velocity-aware: `velocity / 127` maps to gain
-- `noteOn(midi, velocity)` / `noteOff(midi)` / `noteOnce(midi)` / `allNotesOff()`
-
-### 3. Note Engine — `utils/noteEngine.ts`
-
-```ts
-midiToNoteInfo(60)    // → { midi:60, name:'C', octave:4, label:'C4', isBlack:false, frequency:261.6 }
-matchNotes(62, 60)    // → { result: 'wrong', played: NoteInfo, target: NoteInfo }
-matchNotes(72, 60)    // → { result: 'octave-off', ... }   // same note class, wrong octave
-matchNotes(60, 60)    // → { result: 'correct', ... }
-buildKeyboardLayout(48, 84)  // → KeyLayout[] for rendering the piano SVG
-getScaleNotes(60, 'major')   // → [60,62,64,65,67,69,71,72]
-```
-
-### 4. Match Results
-
-| Result | Meaning |
-|--------|---------|
-| `correct` | Exact MIDI note match |
-| `wrong` | Different pitch class |
-| `octave-off` | Same note name, different octave |
-| `idle` | No note playing |
-
----
-
-## Modes
-
-### Free Play (`/play`)
-- Set a target note manually or shuffle randomly
-- Press Space to shuffle
-- Streak counter for consecutive correct notes
-- Click piano keys with mouse/touch or use a real MIDI keyboard
-
-### Lessons (`/lesson` → `/lesson/:id`)
-- 6 built-in lessons: Middle C, C Major Scale, G Major Scale, Pentatonic, Chromatic, Thirds
-- Step-by-step — plays the next note only after the correct one is hit
-- Tracks accuracy per session, saves high score per lesson
-- Skip button for practice mode
-
-### Sheet Music (`/sheet`)
-- SVG-rendered staff notation
-- Blue = current target note, green = already played
-- Click any note head to preview its sound
-- Advances automatically on correct notes
-
----
-
-## Adding Lessons
-
-Edit `src/stores/lesson.store.ts` — add to the `CATALOG` array:
+Edit `src/stores/lesson.store.ts` and add an entry to `CATALOG`:
 
 ```ts
 {
   id: 'my-lesson',
   title: 'My Custom Lesson',
-  description: 'Description here',
-  difficulty: 'beginner',
+  description: 'Short description shown in the lesson list.',
+  difficulty: 'beginner',          // 'beginner' | 'intermediate' | 'advanced'
   status: 'available',
-  tags: ['custom'],
-  steps: [60, 62, 64].map((note, i) => ({
+  tags: ['scales', 'C major'],
+  steps: [60, 62, 64, 65, 67].map((note, i) => ({
     id: `step-${i}`,
     targetNote: note,
     durationMs: 0,
-    hint: i === 0 ? 'Start on C!' : undefined,
+    hint: i === 0 ? 'Start on Middle C!' : undefined,
   })),
-}
-```
-
----
-
-## Adding Sheet Music Pieces
-
-Edit the `pieces` array in `SheetMusicPage.vue`:
-
-```ts
-{
-  id: 'my-piece',
-  title: 'My Piece',
-  composer: 'Me',
-  bpm: 120,
-  timeSignature: [4, 4],
-  keySignature: 0,
-  measures: [
-    {
-      number: 1,
-      notes: [
-        { id: 'n1', midi: 60, startBeat: 0, durationBeats: 1, hand: 'right' },
-        { id: 'n2', midi: 64, startBeat: 1, durationBeats: 1, hand: 'right' },
-      ]
-    }
-  ]
 }
 ```
 
@@ -175,24 +124,41 @@ Edit the `pieces` array in `SheetMusicPage.vue`:
 
 ## Browser Compatibility
 
-| Browser | MIDI | Audio |
-|---------|------|-------|
-| Chrome  | ✅ Full | ✅ |
-| Edge    | ✅ Full | ✅ |
-| Firefox | ❌ (no Web MIDI) | ✅ |
-| Safari  | ❌ (no Web MIDI) | ✅ |
+| Browser | MIDI keyboard | Audio | Touch piano |
+|---------|:---:|:---:|:---:|
+| Chrome | ✅ | ✅ | ✅ |
+| Edge | ✅ | ✅ | ✅ |
+| Firefox | ❌ | ✅ | ✅ |
+| Safari | ❌ | ✅ | ✅ |
 
-> For Firefox/Safari: the app still works with mouse/touch piano input — only hardware MIDI keyboards are unavailable.
+Firefox and Safari users can still use the on-screen keyboard with mouse or touch — only hardware MIDI input is unavailable.
 
 ---
 
-## Roadmap Ideas
+## Deploying
+
+Piano Master deploys to **GitHub Pages** (frontend) and **Heroku** (backend) automatically via GitHub Actions on every push to `main`.
+
+```bash
+# Frontend (GitHub Pages)
+git push origin main   # triggers .github/workflows/deploy.yml
+
+# Backend (Heroku)
+heroku create piano-master-api
+heroku config:set NODE_ENV=production
+git push heroku main
+```
+
+Live URL after deployment: `https://Shayansimaei.github.io/noteflow/`
+
+---
+
+## Roadmap
 
 - [ ] Metronome with BPM sync
-- [ ] Chord detection (multiple simultaneous notes)
-- [ ] Left/right hand separation in sheet mode
-- [ ] Record & playback sessions
-- [ ] Custom sample packs (upload your own)
-- [ ] Interval and chord ear training modes
-- [ ] MusicXML import for sheet music
-- [ ] Mobile: Capacitor wrapper for iOS/Android MIDI via BLE-MIDI
+- [ ] Record and play back your own sessions
+- [ ] MusicXML import for richer sheet music
+- [ ] Interval and chord ear training mode
+- [ ] Custom sample packs — upload your own instrument sounds
+- [ ] Mobile: Capacitor wrapper for iOS and Android with BLE-MIDI support
+- [ ] Leaderboard and progress tracking with backend sync
