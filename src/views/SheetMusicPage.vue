@@ -45,7 +45,6 @@
           <button class="piece-btn piece-btn--import" @click="isNoteDisplay = !isNoteDisplay">
             <ion-icon :icon="eyeOutline" />
             <span class="piece-title">Play And Heard</span>
-            <span class="piece-composer mono">paste notation</span>
           </button>
         </div>
 
