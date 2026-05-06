@@ -6,7 +6,7 @@
         <ion-buttons slot="end">
           <DeviceStatusBar />
            <ion-button fill="outline" size="small" class="random-btn" @click="gitHub">
-            <ion-icon :icon="logoGithub" herf="https://github.com/Shayansimaei/noteflow"/>
+            <ion-icon :icon="logoGithub" data-link="https://github.com/Shayansimaei/PianoMaster"/>
             </ion-button>
 
         </ion-buttons>
@@ -221,7 +221,7 @@ function onRangeChange(start: number, end: number):void{
 
 }
 function gitHub(){
-  window.open("https://github.com/Shayansimaei/noteflow")
+  window.open("https://github.com/Shayansimaei/PianoMaster")
 }
 </script>
 

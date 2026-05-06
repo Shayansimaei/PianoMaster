@@ -11,34 +11,15 @@ const routes: RouteRecordRaw[] = [
     path: '/tabs',
     component: () => import('@/views/TabsRoot.vue'),
     children: [
-      {
-        path: '',
-        redirect: '/tabs/play',
-      },
-      {
-        path: 'play',
-        component: () => import('@/views/PlayPage.vue'),
-      },
-      {
-        path: 'lesson',
-        component: () => import('@/views/LessonPage.vue'),
-      },
-      
-      {
-        path: 'lesson/:id',
-        component: () => import('@/views/LessonDetailPage.vue'),
-      },
-      { path: 'chord',
-       component: () => import('@/views/ChordCompanionPage.vue') },
-
-      {
-        path: 'sheet',
-        component: () => import('@/views/SheetMusicPage.vue'),
-      },
-      {
-        path: 'devices',
-        component: () => import('@/views/DevicesPage.vue'),
-      },
+   { path: '',           redirect: '/tabs/play' },
+      { path: 'play',       component: () => import('@/views/PlayPage.vue') },
+      { path: 'lesson',     component: () => import('@/views/LessonPage.vue') },
+      { path: 'lesson/:id', component: () => import('@/views/LessonDetailPage.vue') },
+      { path: 'chord',      component: () => import('@/views/ChordCompanionPage.vue') },
+      { path: 'field',      component: () => import('@/views/HarmonicFieldPage.vue') },
+      { path: 'sheet',      component: () => import('@/views/SheetMusicPage.vue') },
+      { path: 'devices',    component: () => import('@/views/DevicesPage.vue') },
+      { path: '*',    redirect:'/tabs/play' },
     ],
   },
 ]
